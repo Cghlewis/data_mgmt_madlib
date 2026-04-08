@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Management Grant Mad Lib</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #faf7f0;
+      --accent: #c0392b;
+      --muted: #7f8c8d;
+      --highlight: #f9e4b7;
+      --border: #d4c9a8;
+      --filled: #2c3e50;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Source Code Pro', monospace;
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 27px,
+          rgba(0,0,0,0.04) 28px
+        );
+    }
+
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 3px double var(--border);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+
+    header h1 span {
+      color: var(--accent);
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* --- Word List Section --- */
+    .word-list-section {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 32px;
+      margin-bottom: 36px;
+      box-shadow: 4px 4px 0 var(--border);
+    }
+
+    .word-list-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .word-list-section .instruction {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .word-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .word-item label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .word-item label .word-type {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .word-item input[type="text"] {
+      width: 100%;
+      padding: 6px 10px;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.9rem;
+      color: var(--filled);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .word-item input[type="text"]:focus {
+      border-bottom-color: var(--accent);
+      background: var(--highlight);
+    }
+
+    .word-item input[type="text"]::placeholder {
+      color: #bbb;
+      font-style: italic;
+    }
+
+    /* --- Story Section --- */
+    .story-section {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      padding: 32px 36px;
+      box-shadow: 4px 4px 0 var(--border);
+      margin-bottom: 28px;
+    }
+
+    .story-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    #story-text {
+      font-size: 1.05rem;
+      line-height: 2.1;
+      color: var(--ink);
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 2px solid var(--ink);
+      text-align: center;
+      margin: 0 2px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      vertical-align: bottom;
+      line-height: 1.6;
+      transition: color 0.2s, border-color 0.2s;
+      cursor: default;
+      padding: 0 4px;
+    }
+
+    .blank.filled {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      border-bottom-style: solid;
+    }
+
+    /* --- Buttons --- */
+    .controls {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    button {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 10px 22px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+    }
+
+    .btn-fill {
+      background: var(--ink);
+      color: var(--paper);
+      border: 2px solid var(--ink);
+    }
+
+    .btn-fill:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--muted);
+      border: 2px solid var(--border);
+    }
+
+    .btn-reset:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .btn-print {
+      background: transparent;
+      color: var(--muted);
+      border: 2px solid var(--border);
+    }
+
+    .btn-print:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--border);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 20px;
+    }
+
+    @media print {
+      body { background: white; padding: 20px; }
+      .controls, .word-list-section { display: none; }
+      .story-section { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Data Management Plan<br/><span>Mad Lib</span></h1>
+    <p>Fill in the words above, then reveal your story</p>
+  </header>
+
+  <!-- WORD LIST -->
+  <div class="word-list-section">
+    <h2>Step 1 — Choose Your Words</h2>
+    <p class="instruction">Fill these in before reading the paragraph below</p>
+    <p style="font-size:0.78rem; color: var(--muted); font-style: italic; margin-bottom: 20px;">⚠️ Disclaimer: This Mad Lib is purely for entertainment purposes. Please do not submit this as your actual data management plan.</p>
+    <div class="word-grid" id="word-inputs"></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls" style="margin-bottom:28px;">
+    <button class="btn-fill" onclick="fillStory()">→ Fill In the Story</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset</button>
+    <button class="btn-print" onclick="window.print()">⎙ Print</button>
+  </div>
+
+  <!-- STORY -->
+  <div class="story-section">
+    <h2>Step 2 — Your Story</h2>
+    <p id="story-text"></p>
+  </div>
+
+  <footer>A Mad Lib for Data Management Plans</footer>
+
+</div>
+
+<script>
+  // Define the words needed, in order, with labels
+  const words = [
+    { id: "adj1",         label: "Adjective #1",          placeholder: "" },
+    { id: "noun1",        label: "Noun #1",                placeholder: "" },
+    { id: "adj2",         label: "Adjective #2",          placeholder: "" },
+    { id: "number1",      label: "Number #1",             placeholder: "" },
+    { id: "noun2",        label: "Noun #2",               placeholder: "" },
+    { id: "adj3",         label: "Adjective #3",          placeholder: "" },
+    { id: "noun3",        label: "Noun #3",               placeholder: "" },
+    { id: "adj4",         label: "Adjective #4",          placeholder: "" },
+    { id: "adj5",         label: "Adjective #5",          placeholder: "" },
+    { id: "adj6",         label: "Adjective #6",          placeholder: "" },
+    { id: "noun4",        label: "Noun #4",               placeholder: "" },
+    { id: "noun5",        label: "Noun #5",               placeholder: "" },
+    { id: "role1",        label: "Project Role #1",       placeholder: "" },
+    { id: "role1b",       label: "Same Project Role (repeat Role #1)", placeholder: "" },
+    { id: "role2",        label: "Different Project Role", placeholder: "" },
+    { id: "noun6",        label: "Noun #6",               placeholder: "" },
+    { id: "adj7",         label: "Adjective #7",          placeholder: "" },
+    { id: "noun7",        label: "Noun #7",               placeholder: "" },
+    { id: "number2",      label: "Number #2",             placeholder: "" },
+  ];
+
+  // Build the input grid
+  const grid = document.getElementById('word-inputs');
+  words.forEach(w => {
+    const div = document.createElement('div');
+    div.className = 'word-item';
+    div.innerHTML = `
+      <label for="${w.id}"><span class="word-type">${w.label}</span></label>
+      <input type="text" id="${w.id}" placeholder="${w.placeholder}" autocomplete="off" />
+    `;
+    grid.appendChild(div);
+    // Live update on input
+    div.querySelector('input').addEventListener('input', fillStory);
+  });
+
+  // Build the story template using blank spans keyed by word id
+  const template = [
+    { type: 'text', text: 'Our team was recently awarded a new grant to study the efficacy of the ' },
+    { type: 'blank', id: 'adj1',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' ' },
+    { type: 'blank', id: 'noun1', fallback: 'NOUN' },
+    { type: 'text', text: ' program. In preparation for this study, we wanted to review our ' },
+    { type: 'blank', id: 'adj2',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' data management plan. In the plan, we say that we will collect ' },
+    { type: 'blank', id: 'number1', fallback: 'NUMBER' },
+    { type: 'text', text: ' datasets, in ' },
+    { type: 'blank', id: 'noun2', fallback: 'NOUN' },
+    { type: 'text', text: ' formats. We will manage that data in a ' },
+    { type: 'blank', id: 'adj3',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' way that ensures reproducibility. We will store our data using the ' },
+    { type: 'blank', id: 'noun3', fallback: 'NOUN' },
+    { type: 'text', text: ' rule, ensuring that our data is secure. We will use ' },
+    { type: 'blank', id: 'adj4',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' file naming conventions that are ' },
+    { type: 'blank', id: 'adj5',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' and ' },
+    { type: 'blank', id: 'adj6',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: '. We will document all of our processes using interoperable formats such as ' },
+    { type: 'blank', id: 'noun4', fallback: 'NOUN' },
+    { type: 'text', text: ' or ' },
+    { type: 'blank', id: 'noun5', fallback: 'NOUN' },
+    { type: 'text', text: '. The ' },
+    { type: 'blank', id: 'role1', fallback: 'PROJECT ROLE' },
+    { type: 'text', text: ' will oversee the flow of data through the project, and if the ' },
+    { type: 'blank', id: 'role1b', fallback: 'SAME PROJECT ROLE' },
+    { type: 'text', text: ' leaves, then ' },
+    { type: 'blank', id: 'role2', fallback: 'DIFFERENT PROJECT ROLE' },
+    { type: 'text', text: ' will oversee this process. By the end of the project, a de-identified dataset will be publicly released on ' },
+    { type: 'blank', id: 'noun6', fallback: 'NOUN' },
+    { type: 'text', text: ' repository, along with ' },
+    { type: 'blank', id: 'adj7',  fallback: 'ADJECTIVE' },
+    { type: 'text', text: ' metadata and a ' },
+    { type: 'blank', id: 'noun7', fallback: 'NOUN' },
+    { type: 'text', text: ' license. Data will be retained for ' },
+    { type: 'blank', id: 'number2', fallback: 'NUMBER' },
+    { type: 'text', text: ' years.' },
+  ];
+
+  function buildStory() {
+    const p = document.getElementById('story-text');
+    p.innerHTML = '';
+    template.forEach(part => {
+      if (part.type === 'text') {
+        p.appendChild(document.createTextNode(part.text));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'blank';
+        span.dataset.id = part.id;
+        span.dataset.fallback = part.fallback;
+        span.textContent = part.fallback;
+        p.appendChild(span);
+      }
+    });
+  }
+
+  function fillStory() {
+    document.querySelectorAll('#story-text .blank').forEach(span => {
+      const id = span.dataset.id;
+      const val = (document.getElementById(id)?.value || '').trim();
+      if (val) {
+        span.textContent = val;
+        span.classList.add('filled');
+      } else {
+        span.textContent = span.dataset.fallback;
+        span.classList.remove('filled');
+      }
+    });
+  }
+
+  function resetAll() {
+    words.forEach(w => {
+      const el = document.getElementById(w.id);
+      if (el) el.value = '';
+    });
+    buildStory();
+  }
+
+  // Initialize
+  buildStory();
+</script>
+</body>
+</html>
